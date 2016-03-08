@@ -7,6 +7,7 @@ ArrayList <SkeletonData> bodies;
 void setup()
 {
   size(1280, 1080, P3D);
+  frameRate(30);
   background(0);
   kinect = new Kinect(this);
   smooth();
@@ -24,7 +25,7 @@ void draw()
   for (int i=0; i<bodies.size (); i++) 
   {
     drawSkeleton(bodies.get(i));
-    drawPosition(bodies.get(i));
+//    drawPosition(bodies.get(i));
   }
 }
 
