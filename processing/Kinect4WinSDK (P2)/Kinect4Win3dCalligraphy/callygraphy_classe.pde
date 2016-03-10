@@ -2,7 +2,6 @@
   Here we have all the classes connected to storage and output
 
 */
-
 class Arm
 {
   public PVector wrist; 
@@ -32,5 +31,3 @@ class Stroke
   }
   
 }
-
-

@@ -13,6 +13,12 @@ import KinectPV2.*;
 
 KinectPV2 kinect;
 
+import peasy.*;
+import peasy.org.apache.commons.math.*;
+import peasy.org.apache.commons.math.geometry.*;
+import peasy.test.*;
+
+PeasyCam cam;
 
 void setup() {
   size(1920, 1080, P3D);
@@ -24,6 +30,11 @@ void setup() {
   kinect.enableSkeleton3DMap(true);
 
   kinect.init();
+  
+  cam = new PeasyCam(this, 100);
+  cam.setMinimumDistance(50);
+  cam.setMaximumDistance(1200);
+  
 }
 
 void draw() {
@@ -31,8 +42,12 @@ void draw() {
 
   image(kinect.getColorImage(), 0, 0, width, height);
 
-//  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
+/*
+  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
+  ArrayList<KSkeleton> skeletonArray3d =  kinect.getSkeleton3d();
+*/
   ArrayList<KSkeleton> skeletonArray =  kinect.getSkeleton3d();
+
 
   //individual JOINTS
   for (int i = 0; i < skeletonArray.size(); i++) {
@@ -50,7 +65,18 @@ void draw() {
       drawHandState(joints[KinectPV2.JointType_HandLeft]);
     }
   }
-
+/*
+  for (int i = 0; i < skeletonArray3d.size(); i++) {
+    KSkeleton skeleton3d = (KSkeleton) skeletonArray3d.get(i);
+    if (skeleton3d.isTracked()) {
+      KJoint[] joints = skeleton3d.getJoints();
+      color col  = skeleton3d.getIndexColor();
+      fill(col);
+      stroke(col);
+      drawBody(joints);
+    }
+  }
+*/
   fill(255, 0, 0);
   text(frameRate, 50, 50);
 }
@@ -108,8 +134,9 @@ void drawBody(KJoint[] joints) {
 //draw joint
 void drawJoint(KJoint[] joints, int jointType) {
   pushMatrix();
-  translate(joints[jointType].getX(), joints[jointType].getY(), joints[jointType].getZ());
-  ellipse(0, 0, 25, 25);
+    translate(joints[jointType].getX(), joints[jointType].getY(), joints[jointType].getZ());
+      sphere(10);
+//    ellipse(0, 0, 25, 25);
   popMatrix();
   println("x: "+ joints[jointType].getX() +" | y: "+ joints[jointType].getY() +" | z: "+ joints[jointType].getZ() );
 }
@@ -118,7 +145,7 @@ void drawJoint(KJoint[] joints, int jointType) {
 void drawBone(KJoint[] joints, int jointType1, int jointType2) {
   pushMatrix();
   translate(joints[jointType1].getX()*width/2 + width/2,-1*joints[jointType1].getY()*height/2 + height/2, joints[jointType1].getZ());
-  ellipse(0, 0, 25, 25);
+//  ellipse(0, 0, 25, 25);
   popMatrix();
   line(joints[jointType1].getX(), joints[jointType1].getY(), joints[jointType1].getZ(), joints[jointType2].getX(), joints[jointType2].getY(), joints[jointType2].getZ());
   //  println("r-thumb:" + KinectPV2.JointType_ThumbRight +" | r-wrist: "+ KinectPV2.JointType_WristRight +" | r-elbow: " + KinectPV2.JointType_ElbowRight );
