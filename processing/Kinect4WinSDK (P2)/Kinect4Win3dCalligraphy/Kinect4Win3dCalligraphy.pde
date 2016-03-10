@@ -24,7 +24,7 @@ color[]       userClr = new color[]{ color(255,0,0),
 
 void setup()
 {
-  size(1280, 1080, OPENGL);
+  size(1280, 1080, P3D);
   frameRate(30);
   background(0);
   kinect = new Kinect(this);
@@ -37,9 +37,9 @@ void draw()
   if(mousePressed){
     background(0);
   }
-//  image(kinect.GetImage(), 640, 0, 640, 540);
+  image(kinect.GetImage(), 0, 0, 640, 540);
 //  image(kinect.GetDepth(), 640, 540, 640, 540);
-//  image(kinect.GetMask(), 0, 540, 640, 540);
+  //image(kinect.GetMask(), 0, 0, 640, 540);
   for (int i=0; i<bodies.size (); i++) 
   {
     drawSkeleton(bodies.get(i));
@@ -105,11 +105,11 @@ void drawSkeleton(SkeletonData _s)
   Kinect.NUI_SKELETON_POSITION_HAND_LEFT);
   */
   // Right Arm
-  /*
+  
   DrawBone(_s, 
   Kinect.NUI_SKELETON_POSITION_SHOULDER_RIGHT, 
   Kinect.NUI_SKELETON_POSITION_ELBOW_RIGHT);
-  */
+  
   DrawBone(_s, 
   Kinect.NUI_SKELETON_POSITION_ELBOW_RIGHT, 
   Kinect.NUI_SKELETON_POSITION_WRIST_RIGHT);
