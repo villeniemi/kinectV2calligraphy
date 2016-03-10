@@ -21,6 +21,7 @@ void setup() {
 
   kinect.enableSkeletonColorMap(true);
   kinect.enableColorImg(true);
+  kinect.enableSkeleton3DMap(true);
 
   kinect.init();
 }
@@ -30,7 +31,8 @@ void draw() {
 
   image(kinect.getColorImage(), 0, 0, width, height);
 
-  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
+//  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
+  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeleton3d();
 
   //individual JOINTS
   for (int i = 0; i < skeletonArray.size(); i++) {
@@ -100,6 +102,7 @@ void drawBody(KJoint[] joints) {
 /*
   drawJoint(joints, KinectPV2.JointType_Head);
 */ 
+
 }
 
 //draw joint
@@ -108,15 +111,17 @@ void drawJoint(KJoint[] joints, int jointType) {
   translate(joints[jointType].getX(), joints[jointType].getY(), joints[jointType].getZ());
   ellipse(0, 0, 25, 25);
   popMatrix();
+  println("x: "+ joints[jointType].getX() +" | y: "+ joints[jointType].getY() +" | z: "+ joints[jointType].getZ() );
 }
 
 //draw bone
 void drawBone(KJoint[] joints, int jointType1, int jointType2) {
   pushMatrix();
-  translate(joints[jointType1].getX(), joints[jointType1].getY(), joints[jointType1].getZ());
+  translate(joints[jointType1].getX()*width/2 + width/2,-1*joints[jointType1].getY()*height/2 + height/2, joints[jointType1].getZ());
   ellipse(0, 0, 25, 25);
   popMatrix();
   line(joints[jointType1].getX(), joints[jointType1].getY(), joints[jointType1].getZ(), joints[jointType2].getX(), joints[jointType2].getY(), joints[jointType2].getZ());
+  //  println("r-thumb:" + KinectPV2.JointType_ThumbRight +" | r-wrist: "+ KinectPV2.JointType_WristRight +" | r-elbow: " + KinectPV2.JointType_ElbowRight );
 }
 
 //draw hand state
@@ -125,6 +130,7 @@ void drawHandState(KJoint joint) {
   handState(joint.getState());
   pushMatrix();
   translate(joint.getX(), joint.getY(), joint.getZ());
+//  println("z? - " + joint.getZ());
   ellipse(0, 0, 70, 70);
   popMatrix();
 }
