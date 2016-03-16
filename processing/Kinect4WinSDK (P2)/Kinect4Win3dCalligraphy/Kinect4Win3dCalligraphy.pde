@@ -22,10 +22,17 @@ color[]       userClr = new color[]{ color(255,0,0),
                                      color(0,255,255)
                                    };
 
+float fov = radians(43.5);
+float aspectRatio; 
 void setup()
 {
-  size(1280, 1080, P3D);
+ 
+  size(640, 480, P3D);
   frameRate(30);
+  aspectRatio = float(width)/float(height);
+  float cameraZ = (height/2.0) / tan(fov/2.0);
+  perspective(fov, aspectRatio, 
+            cameraZ/10.0, cameraZ*10.0);
   background(0);
   kinect = new Kinect(this);
   smooth();
@@ -34,10 +41,11 @@ void setup()
 
 void draw()
 {
+  background(0);
   if(mousePressed){
     background(0);
   }
-  image(kinect.GetImage(), 0, 0, 640, 540);
+  //image(kinect.GetImage(), 0, 0, 640, 540);
 //  image(kinect.GetDepth(), 640, 540, 640, 540);
   //image(kinect.GetMask(), 0, 0, 640, 540);
   for (int i=0; i<bodies.size (); i++) 
@@ -147,12 +155,17 @@ void DrawBone(SkeletonData _s, int _j1, int _j2)
   stroke(255, 255, 0);
   if (_s.skeletonPositionTrackingState[_j1] != Kinect.NUI_SKELETON_POSITION_NOT_TRACKED &&
     _s.skeletonPositionTrackingState[_j2] != Kinect.NUI_SKELETON_POSITION_NOT_TRACKED) {
-    line(_s.skeletonPositions[_j1].x*width/2, 
-    _s.skeletonPositions[_j1].y*height/2, 
-    _s.skeletonPositions[_j2].x*width/2, 
-    _s.skeletonPositions[_j2].y*height/2);
+    line(_s.skeletonPositions[_j1].x*width, 
+    _s.skeletonPositions[_j1].y*height, 
+    _s.skeletonPositions[_j2].x*width, 
+    _s.skeletonPositions[_j2].y*height);
     // ADD Z-AXIS HERE
     println("j1:" + _s.skeletonPositions[_j1] +" | j2: "+ _s.skeletonPositions[_j2]);
+    pushMatrix();
+    
+    translate(map(_s.skeletonPositions[_j1].x,0,1,0,width),map(_s.skeletonPositions[_j1].y,0,1,0,height),map(_s.skeletonPositions[_j1].z,0,20000,0,-2000));
+    sphere(20);
+    popMatrix();
   }
 }
 
