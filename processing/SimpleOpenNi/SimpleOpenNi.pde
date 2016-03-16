@@ -86,7 +86,6 @@ void draw()
   // update the cam
   context.update();
   bcgr = context.rgbImage();
-  println(bcgr.width + " "+ bcgr.height );
   background(bcgr);
   
   // set the scene pos
@@ -155,7 +154,54 @@ void draw()
  
   // draw the kinect cam
   context.drawCamFrustum();
+  
+  // drawing calligraphy 
+  
+  
+  for(int i=0;i<userList.length;i++)
+  {
+    
+    if(context.isTrackingSkeleton(userList[i]))
+    {
+       PVector wristPos = new PVector();
+       PVector elbowPos = new PVector();
+       PVector leftWristPos = new PVector();
+       PVector leftHipPos = new PVector();
+       
+       float  confidence;
+       
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_HAND,wristPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_ELBOW,elbowPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HAND,leftWristPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HIP,leftHipPos);
+       
+       //println(wristPos + "   " + elbowPos);
+       pushMatrix();
+       translate(elbowPos.x, elbowPos.y, elbowPos.z);
+       sphere(28);
+        popMatrix();
+       
+       
+        myCal.startStroke(1);
+       
+       /*if (leftWristPos.y > leftHipPos.y) 
+       {
+         myCal.startStroke(1);
+       }
+       else
+      {
+        myCal.finishStroke();
+      } */
+      
+      myCal.addArm(elbowPos, wristPos, 1);
+    }
+  }
+  myCal.drawAll();
+  
 }
+
+
+
 
 // draw the skeleton with the selected joints
 void drawSkeleton(int userId)
