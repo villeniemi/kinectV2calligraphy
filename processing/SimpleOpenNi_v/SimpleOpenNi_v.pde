@@ -34,10 +34,22 @@ color[]       userClr = new color[]{ color(255,0,0),
 PImage bcgr;
 Calligraphy myCal;
 
+
+// Yellowtail integration
+Gesture gestureArray[];
+final int nGestures = 36;  // Number of gestures
+final int minMove = 3;     // Minimum travel for a new point
+int currentGestureID;
+
+Polygon tempP;
+int tmpXp[];
+int tmpYp[];
+
+
+
 void setup()
 {
   size(640,480,P3D);  // strange, get drawing error in the cameraFrustum if i use P3D, in opengl there is no problem
- 
 
   /*
   *
@@ -50,8 +62,8 @@ void setup()
   if(context.isInit() == false)
   {
      println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
- //    exit();
- //    return;  
+     exit();
+     return;  
   }
   
   // disable mirror
@@ -78,7 +90,14 @@ void setup()
               10,50000);
   // Setting up calligraphy class
   myCal = new Calligraphy();
-             
+                        
+ /* Yellowtail */
+  currentGestureID = -1;
+  gestureArray = new Gesture[nGestures];
+  for (int a = 0; a < nGestures; a++) {
+    gestureArray[a] = new Gesture(width, height);
+  }
+  
  }
 
 void draw()
@@ -86,7 +105,6 @@ void draw()
   // update the cam
   context.update();
   bcgr = context.rgbImage();
-  println(bcgr.width + " "+ bcgr.height );
   background(bcgr);
   
   // set the scene pos
@@ -101,9 +119,18 @@ void draw()
   int     index;
   PVector realWorldPoint;
  
+  /* Yellowtail */
+  
+  fill(255, 255, 245);
+  updateGeometry();
+  for (int a = 0; a < nGestures; a++) {
+    renderGesture(gestureArray[a], width, height);
+  }
+  
   translate(0,0,-1000);  // set the rotation center of the scene 1000 infront of the camera
 
   // draw the pointcloud
+  /*
   beginShape(POINTS);
   for(int y=0;y < context.depthHeight();y+=steps)
   {
@@ -124,9 +151,11 @@ void draw()
     } 
   } 
   endShape();
-  
+  */
   // draw the skeleton if it's available
+  
   int[] userList = context.getUsers();
+  /*
   for(int i=0;i<userList.length;i++) // For each user in the list
   {
     if(context.isTrackingSkeleton(userList[i])) 
@@ -155,7 +184,72 @@ void draw()
  
   // draw the kinect cam
   context.drawCamFrustum();
+  */
+  
+  // drawing calligraphy 
+  for(int i=0;i<userList.length;i++)
+  {
+    
+    if(context.isTrackingSkeleton(userList[i]))
+    {
+       PVector wristPos = new PVector();
+       PVector elbowPos = new PVector();
+       PVector leftWristPos = new PVector();
+       PVector leftHipPos = new PVector();
+       
+       float  confidence;
+       
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_HAND,wristPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_ELBOW,elbowPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HAND,leftWristPos);
+       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HIP,leftHipPos);
+       
+       //println(wristPos + "   " + elbowPos);
+       pushMatrix();
+         translate(elbowPos.x, elbowPos.y, elbowPos.z);
+         sphere(28);
+       popMatrix();
+       
+       // myCal.startStroke(1);
+       if (leftWristPos.y > leftHipPos.y) 
+       {
+         myCal.startStroke(1);
+       }
+       else
+      {
+        myCal.finishStroke();
+      }
+      
+      myCal.addArm(elbowPos, wristPos, 1);
+    }
+  }
+  
+  myCal.drawAll();
 }
+
+     
+void mousePressed() {
+  currentGestureID = (currentGestureID+1) % nGestures;
+  Gesture G = gestureArray[currentGestureID];
+  G.clear();
+  G.clearPolys();
+  G.addPoint(mouseX, mouseY);
+}
+
+
+void mouseDragged() {
+  if (currentGestureID >= 0) {
+    Gesture G = gestureArray[currentGestureID];
+    if (G.distToLast(mouseX, mouseY) > minMove) {
+      G.addPoint(mouseX, mouseY);
+      G.smooth();
+      G.compile();
+    }
+  }
+}
+
+
+
 
 // draw the skeleton with the selected joints
 void drawSkeleton(int userId)
@@ -172,7 +266,10 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-
+/*
+  Hide the body parts that we don't need
+*/
+/*
   drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
 
@@ -183,7 +280,7 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);  
-
+*/
   // draw body direction
   getBodyDirection(userId,bodyCenter,bodyDir);
   
@@ -273,6 +370,21 @@ void onVisibleUser(SimpleOpenNI curContext,int userId)
 
 void keyPressed()
 {
+  if (key == '+' || key == '=') {
+    if (currentGestureID >= 0) {
+      float th = gestureArray[currentGestureID].thickness;
+      gestureArray[currentGestureID].thickness = min(96, th+1);
+      gestureArray[currentGestureID].compile();
+    }
+  } else if (key == '-') {
+    if (currentGestureID >= 0) {
+      float th = gestureArray[currentGestureID].thickness;
+      gestureArray[currentGestureID].thickness = max(2, th-1);
+      gestureArray[currentGestureID].compile();
+    }
+  } else if (key == ' ') {
+    clearGestures();
+  }
   switch(key)
   {
   case ' ':
@@ -334,4 +446,106 @@ void getBodyDirection(int userId,PVector centerPoint,PVector dir)
     
   dir.set(up.cross(left));
   dir.normalize();
+}
+
+/*  Y E L L O W T A I L - gestures */
+
+
+void renderGesture(Gesture gesture, int w, int h) {
+  if (gesture.exists) {
+    if (gesture.nPolys > 0) {
+      Polygon polygons[] = gesture.polygons;
+      int crosses[] = gesture.crosses;
+
+      int xpts[];
+      int ypts[];
+      Polygon p;
+      int cr;
+
+      beginShape(QUADS);
+      int gnp = gesture.nPolys;
+      for (int i=0; i<gnp; i++) {
+
+        p = polygons[i];
+        xpts = p.xpoints;
+        ypts = p.ypoints;
+
+        vertex(xpts[0], ypts[0]);
+        vertex(xpts[1], ypts[1]);
+        vertex(xpts[2], ypts[2]);
+        vertex(xpts[3], ypts[3]);
+
+        if ((cr = crosses[i]) > 0) {
+          if ((cr & 3)>0) {
+            vertex(xpts[0]+w, ypts[0]);
+            vertex(xpts[1]+w, ypts[1]);
+            vertex(xpts[2]+w, ypts[2]);
+            vertex(xpts[3]+w, ypts[3]);
+
+            vertex(xpts[0]-w, ypts[0]);
+            vertex(xpts[1]-w, ypts[1]);
+            vertex(xpts[2]-w, ypts[2]);
+            vertex(xpts[3]-w, ypts[3]);
+          }
+          if ((cr & 12)>0) {
+            vertex(xpts[0], ypts[0]+h);
+            vertex(xpts[1], ypts[1]+h);
+            vertex(xpts[2], ypts[2]+h);
+            vertex(xpts[3], ypts[3]+h);
+
+            vertex(xpts[0], ypts[0]-h);
+            vertex(xpts[1], ypts[1]-h);
+            vertex(xpts[2], ypts[2]-h);
+            vertex(xpts[3], ypts[3]-h);
+          }
+
+          // I have knowingly retained the small flaw of not
+          // completely dealing with the corner conditions
+          // (the case in which both of the above are true).
+        }
+      }
+      endShape();
+    }
+  }
+}
+
+void updateGeometry() {
+  Gesture J;
+  for (int g=0; g<nGestures; g++) {
+    if ((J=gestureArray[g]).exists) {
+      if (g!=currentGestureID) {
+        advanceGesture(J);
+      } else if (!mousePressed) {
+        advanceGesture(J);
+      }
+    }
+  }
+}
+
+void advanceGesture(Gesture gesture) {
+  // Move a Gesture one step
+  if (gesture.exists) { // check
+    int nPts = gesture.nPoints;
+    int nPts1 = nPts-1;
+    Vec3f path[];
+    float jx = gesture.jumpDx;
+    float jy = gesture.jumpDy;
+
+    if (nPts > 0) {
+      path = gesture.path;
+      for (int i = nPts1; i > 0; i--) {
+        path[i].x = path[i-1].x;
+        path[i].y = path[i-1].y;
+      }
+      path[0].x = path[nPts1].x - jx;
+      path[0].y = path[nPts1].y - jy;
+      gesture.compile();
+    }
+  }
+}
+
+void clearGestures() {
+  for (int i = 0; i < nGestures; i++) {
+    gestureArray[i].clear();
+  }
 }
