@@ -2,7 +2,10 @@
   Here we have all the classes connected to storage and output
 
 */
+<<<<<<< HEAD
 /*
+=======
+>>>>>>> 2921c9b74a854206d6dde5663c55d90d29355352
 class Arm
 {
   public PVector wrist; 
@@ -30,6 +33,10 @@ class Stroke
     stroke.add(new Arm(_elbow, _wrist, _str));
   }
   
+<<<<<<< HEAD
 }*/
 
 
+=======
+}
+>>>>>>> 2921c9b74a854206d6dde5663c55d90d29355352
