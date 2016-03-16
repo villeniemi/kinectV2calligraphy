@@ -50,8 +50,8 @@ void setup()
   if(context.isInit() == false)
   {
      println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
-     exit();
-     return;  
+ //    exit();
+ //    return;  
   }
   
   // disable mirror
@@ -86,6 +86,7 @@ void draw()
   // update the cam
   context.update();
   bcgr = context.rgbImage();
+  println(bcgr.width + " "+ bcgr.height );
   background(bcgr);
   
   // set the scene pos
@@ -154,54 +155,7 @@ void draw()
  
   // draw the kinect cam
   context.drawCamFrustum();
-  
-  // drawing calligraphy 
-  
-  
-  for(int i=0;i<userList.length;i++)
-  {
-    
-    if(context.isTrackingSkeleton(userList[i]))
-    {
-       PVector wristPos = new PVector();
-       PVector elbowPos = new PVector();
-       PVector leftWristPos = new PVector();
-       PVector leftHipPos = new PVector();
-       
-       float  confidence;
-       
-       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_HAND,wristPos);
-       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_ELBOW,elbowPos);
-       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HAND,leftWristPos);
-       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HIP,leftHipPos);
-       
-       //println(wristPos + "   " + elbowPos);
-       pushMatrix();
-       translate(elbowPos.x, elbowPos.y, elbowPos.z);
-       sphere(28);
-        popMatrix();
-       
-       
-        myCal.startStroke(1);
-       
-       /*if (leftWristPos.y > leftHipPos.y) 
-       {
-         myCal.startStroke(1);
-       }
-       else
-      {
-        myCal.finishStroke();
-      } */
-      
-      myCal.addArm(elbowPos, wristPos, 1);
-    }
-  }
-  myCal.drawAll();
-  
 }
-
-
-
 
 // draw the skeleton with the selected joints
 void drawSkeleton(int userId)
@@ -218,10 +172,7 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-/*
-  Hide the body parts that we don't need
-*/
-/*
+
   drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
 
@@ -232,7 +183,7 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);  
-*/
+
   // draw body direction
   getBodyDirection(userId,bodyCenter,bodyDir);
   

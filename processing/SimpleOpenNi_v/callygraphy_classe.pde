@@ -58,11 +58,8 @@ class Calligraphy
   
   void startStroke(int _b)
   {
-    if (lastStrokeFinished == true)
-    {
-      strokes.add(new Stroke(_b));
-      lastStrokeFinished = false;
-    }
+    strokes.add(new Stroke(_b));
+    lastStrokeFinished = false;
   }
   
   void drawAll()
@@ -97,32 +94,6 @@ class Calligraphy
       float pStrength = _s.stroke.get(i-1).strength;
       
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
-      stroke(255);
-      fill(127);
-      beginShape();
-      vertex(wrist.x, wrist.y, wrist.z);
-      vertex( elbow.x, elbow.y, elbow.z);
-      vertex( pElbow.x, pElbow.y, pElbow.z);
-      vertex(pWrist.x, pWrist.y, pWrist.z);
-      endShape(CLOSE);
-      
-      
-    }
-  
-  }
-  
-   void brush2(Stroke _s){
-    for (int i=0; i<_s.stroke.size(); i++)
-    {
-      PVector wrist = _s.stroke.get(i).wrist;
-      PVector elbow = _s.stroke.get(i).elbow;
-      float strength = _s.stroke.get(i).strength;
-      
-      PVector pWrist = _s.stroke.get(i-1).wrist;
-      PVector pElbow = _s.stroke.get(i-1).elbow;
-      float pStrength = _s.stroke.get(i-1).strength;
-      
-      //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
       
       translate(width/2, height/2);
       stroke(255);
@@ -133,17 +104,13 @@ class Calligraphy
       vertex( pElbow.x, pElbow.y, pElbow.z);
       vertex(pWrist.x, pWrist.y, pWrist.z);
       endShape(CLOSE);
-      
-      
     }
   
   }
-    
+  
   void drawMe(Stroke _s)
   {
     if (_s.brush == 1) brush1(_s);
-    else 
-    println ("no such a brush");
   }
   
 
