@@ -107,7 +107,7 @@ class Calligraphy
     }
   
   }
-    
+  
   void drawMe(Stroke _s)
   {
     if (_s.brush == 1) brush1(_s);

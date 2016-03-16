@@ -50,8 +50,8 @@ void setup()
   if(context.isInit() == false)
   {
      println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
-     exit();
-     return;  
+ //    exit();
+ //    return;  
   }
   
   // disable mirror
@@ -172,10 +172,7 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
-/*
-  Hide the body parts that we don't need
-*/
-/*
+
   drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
 
@@ -186,7 +183,7 @@ void drawSkeleton(int userId)
   drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
   drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);  
-*/
+
   // draw body direction
   getBodyDirection(userId,bodyCenter,bodyDir);
   
