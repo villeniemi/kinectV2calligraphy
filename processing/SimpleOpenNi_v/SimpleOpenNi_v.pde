@@ -44,6 +44,11 @@ PImage rgbImg;
 People myPeople;
 
 
+// Shaders
+
+
+
+
 // -----------------------------------------------------------------
 // S E T U P
 
@@ -97,15 +102,14 @@ void draw()
 {
   // update the cam
   context.update();
-  rgbImg = context.rgbImage();
-  //rgbImg.resize(1280,960); 
-  background(0);
-  spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+
   rgbImg = context.rgbImage();
   rgbImg.resize(width, height);
   background(0);
+  ambientLight(200, 200, 200);
+  spotLight(255, 255, 255, width/2, height/2, 0, width/2, height/2, 3000, PI/2, 2);
   spotLight(255, 255, 255, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
-
+   spotLight(255, 255, 255, 50, 50, 400, 0, 0, -1, PI/16, 2); 
   // set the scene pos
   translate(width/2, height/2, 0);
   if(sceneRotation){
@@ -237,7 +241,7 @@ void draw()
         popMatrix();
         // Draw the arm, elbow to wrist. Third variable is "strength"
 //        float str = (leftWristPos.y - leftHipPos.y)/8;
-        float strength = (leftWristPos.y - leftHipPos.y)/3;
+        float strength = (leftWristPos.y - leftHipPos.y)/8;
 
   //      float colour = userClr[ (userMap[i] - 1) % userClr.length ];
     
@@ -275,7 +279,8 @@ void draw()
   
   for (int i=0; i < myPeople.calligraphies.size(); i++)
   {
-    myPeople.calligraphies.get(i).drawAll();
+    color c = color(255, 255, 255);
+    myPeople.calligraphies.get(i).drawAll(c);
   }
   
   
