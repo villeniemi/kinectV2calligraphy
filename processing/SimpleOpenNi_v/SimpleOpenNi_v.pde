@@ -31,7 +31,7 @@ color[]       userClr = new color[]{ color(255,0,0),
                                      color(0,255,255)
                                    };
 
-PImage bcgr;
+PImage rgbImg;
 Calligraphy myCal;
 
 
@@ -49,7 +49,8 @@ int tmpYp[];
 
 void setup()
 {
-  size(640,480,P3D);  // strange, get drawing error in the cameraFrustum if i use P3D, in opengl there is no problem
+//  size(640,480,P3D); 
+  size(1280,960,P3D);
 
   /*
   *
@@ -104,9 +105,9 @@ void draw()
 {
   // update the cam
   context.update();
-  bcgr = context.rgbImage();
-  //bcgr.resize(1280,960); 
-  background(bcgr);
+  rgbImg = context.rgbImage();
+  //rgbImg.resize(1280,960); 
+  background(0);
   spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
 
   
@@ -114,26 +115,27 @@ void draw()
   translate(width/2, height/2, 0);
   rotateX(rotX);
   rotateY(rotY);
-  scale(zoomF);
+  scale(zoomF*1.5);
   
   int[]   depthMap = context.depthMap();
   int[]   userMap = context.userMap();
-  int     steps   = 3;  // to speed up the drawing, draw every third point
+  int     steps   = 1;  // to speed up the drawing, draw every third point
   int     index;
   PVector realWorldPoint;
  
   /* Yellowtail */
-  
+  /*
   fill(255, 255, 245);
   updateGeometry();
   for (int a = 0; a < nGestures; a++) {
     renderGesture(gestureArray[a], width, height);
   }
-  
-  translate(0,0,-1000);  // set the rotation center of the scene 1000 infront of the camera
+  */  
+  translate(0,0,-2000);  // set the rotation center of the scene 1000 infront of the camera
 
   // draw the pointcloud
-  /*
+  
+
   beginShape(POINTS);
   for(int y=0;y < context.depthHeight();y+=steps)
   {
@@ -144,21 +146,26 @@ void draw()
       { 
         // draw the projected point
         realWorldPoint = context.depthMapRealWorld()[index];
-        if(userMap[index] == 0)
-          stroke(100); 
-        else
-          stroke(userClr[ (userMap[index] - 1) % userClr.length ]);        
-        
-        point(realWorldPoint.x,realWorldPoint.y,realWorldPoint.z);
+        // but only if the user is there
+        if(userMap[index] != 0) {
+          stroke(rgbImg.pixels[index]);
+        //  stroke(userClr[ (userMap[index] - 1) % userClr.length ]);        
+            
+          point(realWorldPoint.x,realWorldPoint.y,realWorldPoint.z);
+        } 
+        else {
+        }
+        //  stroke(userClr[ (userMap[index] - 1) % userClr.length ]);        
+        //  point(currentPoint.x, currentPoint.y, currentPoint.z); 
       }
     } 
   } 
   endShape();
-  */
+  
   // draw the skeleton if it's available
   
   int[] userList = context.getUsers();
-  /*
+  
   for(int i=0;i<userList.length;i++) // For each user in the list
   {
     if(context.isTrackingSkeleton(userList[i])) 
@@ -186,8 +193,8 @@ void draw()
   }    
  
   // draw the kinect cam
-  context.drawCamFrustum();
-  */
+//  context.drawCamFrustum();
+  
   
   // drawing calligraphy 
   for(int i=0;i<userList.length;i++)

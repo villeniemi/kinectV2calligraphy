@@ -117,7 +117,7 @@ class Calligraphy
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
-      
+      // Previous
       PVector pWrist = _s.stroke.get(i-1).wrist;
       PVector pElbow = _s.stroke.get(i-1).elbow;
       float pStrength = _s.stroke.get(i-1).strength;
