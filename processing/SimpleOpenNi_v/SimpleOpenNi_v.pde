@@ -13,11 +13,18 @@ import SimpleOpenNI.*;
 
 
 SimpleOpenNI context;
-float        zoomF =0.5f;
-float        rotX = radians(180);  // by default rotate the hole scene 180deg around the x-axis, 
+float        zoomF =0.25f;
+float        rotX = radians(180);  // by default rotate the whole scene 180deg around the x-axis, 
                                    // the data from openni comes upside down
 float        rotY = radians(0);
+
+float traY = 0;
+float traX = 0;
+float traZ = -1500;
+
 boolean      autoCalib=true;
+
+boolean      sceneRotation = false; // toggle with spacebar
 
 PVector      bodyCenter = new PVector();
 PVector      bodyDir = new PVector();
@@ -35,30 +42,15 @@ PImage rgbImg;
 Calligraphy myCal;
 
 
-// Yellowtail integration
-Gesture gestureArray[];
-final int nGestures = 36;  // Number of gestures
-final int minMove = 3;     // Minimum travel for a new point
-int currentGestureID;
-
-Polygon tempP;
-int tmpXp[];
-int tmpYp[];
-
-
+// -----------------------------------------------------------------
+// S E T U P
 
 void setup()
 {
 //  size(640,480,P3D); 
-  size(1280,960,P3D);
-
-  /*
-  *
-  *
-  *        Setting up kinect context
-  *
-  *
-  */
+  size(1440,960,P3D);
+  
+  //Setting up kinect context
   context = new SimpleOpenNI(this);
   if(context.isInit() == false)
   {
@@ -90,16 +82,13 @@ void setup()
               float(width)/float(height),
               10,50000);
   // Setting up calligraphy class
-  myCal = new Calligraphy();
-                        
- /* Yellowtail */
-  currentGestureID = -1;
-  gestureArray = new Gesture[nGestures];
-  for (int a = 0; a < nGestures; a++) {
-    gestureArray[a] = new Gesture(width, height);
-  }
-  
- }
+  myCal = new Calligraphy();  
+
+}
+ 
+ 
+// -----------------------------------------------------------------
+// D R A W
 
 void draw()
 {
@@ -114,28 +103,22 @@ void draw()
   background(0);
   spotLight(255, 255, 255, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
 
-  
   // set the scene pos
   translate(width/2, height/2, 0);
-  rotateX(rotX);
-  rotateY(rotY);
-  scale(zoomF*1.5);
+  if(sceneRotation){
+    rotY = rotY + 0.02;
+  }
+    rotateX(rotX);
+    rotateY(rotY);
+  scale(zoomF);
   
   int[]   depthMap = context.depthMap();
   int[]   userMap = context.userMap();
-  int     steps   = 1;  // to speed up the drawing, draw every third point
+  int     steps   = 1;  // add steps to speed up the drawing
   int     index;
   PVector realWorldPoint;
- 
-  /* Yellowtail */
-  /*
-  fill(255, 255, 245);
-  updateGeometry();
-  for (int a = 0; a < nGestures; a++) {
-    renderGesture(gestureArray[a], width, height);
-  }
-  */  
-  translate(0,0,-2000);  // set the rotation center of the scene 1000 infront of the camera
+
+  translate(traX,traY,traZ);  // set the rotation center of the scene 1000 infront of the camera
 
   // draw the pointcloud
   
@@ -197,9 +180,9 @@ void draw()
  
   // draw the kinect cam
 //  context.drawCamFrustum();
+
   
-  
-  // drawing calligraphy 
+  // draw calligraphy 
   for(int i=0;i<userList.length;i++)
   {
     
@@ -219,7 +202,7 @@ void draw()
        
        //println(wristPos + "   " + elbowPos);
        pushMatrix();
-         translate(elbowPos.x, elbowPos.y, elbowPos.z);
+         translate(wristPos.x, wristPos.y, wristPos.z);
          sphere(28);
        popMatrix();
        
@@ -240,29 +223,9 @@ void draw()
   myCal.drawAll();
 }
 
-     
-void mousePressed() {
-  currentGestureID = (currentGestureID+1) % nGestures;
-  Gesture G = gestureArray[currentGestureID];
-  G.clear();
-  G.clearPolys();
-  G.addPoint(mouseX, mouseY);
-}
 
-
-void mouseDragged() {
-  if (currentGestureID >= 0) {
-    Gesture G = gestureArray[currentGestureID];
-    if (G.distToLast(mouseX, mouseY) > minMove) {
-      G.addPoint(mouseX, mouseY);
-      G.smooth();
-      G.compile();
-    }
-  }
-}
-
-
-
+// -----------------------------------------------------------------
+// Kinect drawing functions
 
 // draw the skeleton with the selected joints
 void drawSkeleton(int userId)
@@ -356,83 +319,6 @@ void drawJointOrientation(int userId,int jointType,PVector pos,float length)
   popMatrix();
 }
 
-// -----------------------------------------------------------------
-// SimpleOpenNI user events
-
-void onNewUser(SimpleOpenNI curContext,int userId)
-{
-  println("onNewUser - userId: " + userId);
-  println("\tstart tracking skeleton");
-  
-  context.startTrackingSkeleton(userId);
-}
-
-void onLostUser(SimpleOpenNI curContext,int userId)
-{
-  println("onLostUser - userId: " + userId);
-}
-
-void onVisibleUser(SimpleOpenNI curContext,int userId)
-{
-  //println("onVisibleUser - userId: " + userId);
-}
-
-
-// -----------------------------------------------------------------
-// Keyboard events
-
-void keyPressed()
-{
-  if (key == '+' || key == '=') {
-    if (currentGestureID >= 0) {
-      float th = gestureArray[currentGestureID].thickness;
-      gestureArray[currentGestureID].thickness = min(96, th+1);
-      gestureArray[currentGestureID].compile();
-    }
-  } else if (key == '-') {
-    if (currentGestureID >= 0) {
-      float th = gestureArray[currentGestureID].thickness;
-      gestureArray[currentGestureID].thickness = max(2, th-1);
-      gestureArray[currentGestureID].compile();
-    }
-  } else if (key == ' ') {
-    clearGestures();
-  }
-  switch(key)
-  {
-  case ' ':
-    context.setMirror(!context.mirror());
-    break;
-  }
-    
-  switch(keyCode)
-  {
-    case LEFT:
-      rotY += 0.1f;
-      break;
-    case RIGHT:
-      // zoom out
-      rotY -= 0.1f;
-      break;
-    case UP:
-      if(keyEvent.isShiftDown())
-        zoomF += 0.01f;
-      else
-        rotX += 0.1f;
-      break;
-    case DOWN:
-      if(keyEvent.isShiftDown())
-      {
-        zoomF -= 0.01f;
-        if(zoomF < 0.01)
-          zoomF = 0.01;
-      }
-      else
-        rotX -= 0.1f;
-      break;
-  }
-}
-
 void getBodyDirection(int userId,PVector centerPoint,PVector dir)
 {
   PVector jointL = new PVector();
@@ -461,104 +347,95 @@ void getBodyDirection(int userId,PVector centerPoint,PVector dir)
   dir.normalize();
 }
 
-/*  Y E L L O W T A I L - gestures */
+// -----------------------------------------------------------------
+// SimpleOpenNI user events
+
+void onNewUser(SimpleOpenNI curContext,int userId)
+{
+  println("onNewUser - userId: " + userId);
+  println("\tstart tracking skeleton");
+  
+  context.startTrackingSkeleton(userId);
+}
+
+void onLostUser(SimpleOpenNI curContext,int userId)
+{
+  println("onLostUser - userId: " + userId);
+}
+
+void onVisibleUser(SimpleOpenNI curContext,int userId)
+{
+  //println("onVisibleUser - userId: " + userId);
+}
 
 
-void renderGesture(Gesture gesture, int w, int h) {
-  if (gesture.exists) {
-    if (gesture.nPolys > 0) {
-      Polygon polygons[] = gesture.polygons;
-      int crosses[] = gesture.crosses;
+// -----------------------------------------------------------------
+// Keyboard events (camera controls)
 
-      int xpts[];
-      int ypts[];
-      Polygon p;
-      int cr;
-
-      beginShape(QUADS);
-      int gnp = gesture.nPolys;
-      for (int i=0; i<gnp; i++) {
-
-        p = polygons[i];
-        xpts = p.xpoints;
-        ypts = p.ypoints;
-
-        vertex(xpts[0], ypts[0]);
-        vertex(xpts[1], ypts[1]);
-        vertex(xpts[2], ypts[2]);
-        vertex(xpts[3], ypts[3]);
-
-        if ((cr = crosses[i]) > 0) {
-          if ((cr & 3)>0) {
-            vertex(xpts[0]+w, ypts[0]);
-            vertex(xpts[1]+w, ypts[1]);
-            vertex(xpts[2]+w, ypts[2]);
-            vertex(xpts[3]+w, ypts[3]);
-
-            vertex(xpts[0]-w, ypts[0]);
-            vertex(xpts[1]-w, ypts[1]);
-            vertex(xpts[2]-w, ypts[2]);
-            vertex(xpts[3]-w, ypts[3]);
+void keyPressed()
+{
+  logLocation();
+  switch(key)
+  {
+  case ' ':
+    context.setMirror(!context.mirror());
+    sceneRotation = !sceneRotation;
+    break;
+  }
+    
+  switch(keyCode)
+  {
+    case LEFT:
+      if(keyEvent.isControlDown()){
+        traX -= 100;
+      } else {
+        rotY += 0.1f;        
+      }
+      break;
+    case RIGHT:
+      if(keyEvent.isControlDown()){
+        traX += 100;
+      } else {
+        // zoom out
+        rotY -= 0.1f;
+      }
+      break;
+    case UP:
+      if(keyEvent.isControlDown() && keyEvent.isControlDown()){
+        traZ += 100;
+      } else {
+        if(keyEvent.isControlDown()){
+          traY += 100;
+        } else {
+          if(keyEvent.isShiftDown()){
+            zoomF += 0.01f;
+          } else {
+            rotX += 0.1f;
           }
-          if ((cr & 12)>0) {
-            vertex(xpts[0], ypts[0]+h);
-            vertex(xpts[1], ypts[1]+h);
-            vertex(xpts[2], ypts[2]+h);
-            vertex(xpts[3], ypts[3]+h);
-
-            vertex(xpts[0], ypts[0]-h);
-            vertex(xpts[1], ypts[1]-h);
-            vertex(xpts[2], ypts[2]-h);
-            vertex(xpts[3], ypts[3]-h);
-          }
-
-          // I have knowingly retained the small flaw of not
-          // completely dealing with the corner conditions
-          // (the case in which both of the above are true).
         }
       }
-      endShape();
-    }
-  }
-}
-
-void updateGeometry() {
-  Gesture J;
-  for (int g=0; g<nGestures; g++) {
-    if ((J=gestureArray[g]).exists) {
-      if (g!=currentGestureID) {
-        advanceGesture(J);
-      } else if (!mousePressed) {
-        advanceGesture(J);
+      break;
+    case DOWN:
+      if(keyEvent.isControlDown() && keyEvent.isControlDown()){
+        traZ -= 100;
+      } else {
+        if(keyEvent.isControlDown()){
+          traY -= 100;
+        } else {
+          if(keyEvent.isShiftDown()){
+            zoomF -= 0.01f;
+            if(zoomF < 0.01)
+              zoomF = 0.01;
+          }
+          else {
+            rotX -= 0.1f;
+          }
+        }
       }
-    }
+      break;
   }
 }
 
-void advanceGesture(Gesture gesture) {
-  // Move a Gesture one step
-  if (gesture.exists) { // check
-    int nPts = gesture.nPoints;
-    int nPts1 = nPts-1;
-    Vec3f path[];
-    float jx = gesture.jumpDx;
-    float jy = gesture.jumpDy;
-
-    if (nPts > 0) {
-      path = gesture.path;
-      for (int i = nPts1; i > 0; i--) {
-        path[i].x = path[i-1].x;
-        path[i].y = path[i-1].y;
-      }
-      path[0].x = path[nPts1].x - jx;
-      path[0].y = path[nPts1].y - jy;
-      gesture.compile();
-    }
-  }
-}
-
-void clearGestures() {
-  for (int i = 0; i < nGestures; i++) {
-    gestureArray[i].clear();
-  }
+void logLocation(){
+      println("traX: "+traX+" | traY: "+traY+" | traZ: "+traZ+" | zoomF: "+zoomF+" | rotX: "+rotX+" | rotY: "+rotY+".");
 }
