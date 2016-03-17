@@ -8,6 +8,7 @@ class Arm
   public PVector wrist; 
   public PVector elbow; 
   public float strength;
+  public float colour;
   
   Arm(PVector _elbow, PVector _wrist, float _str )
   {
@@ -27,7 +28,7 @@ class Stroke
     brush = _b;
   }
   
-  void addArm(PVector _elbow, PVector _wrist, float _str)
+  void addArm(PVector _elbow, PVector _wrist, float _str )
   {
     stroke.add(new Arm(_elbow, _wrist, _str));
   }
@@ -145,6 +146,7 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
+      float colour = _s.stroke.get(i).colour;
       
       PVector pWrist = _s.stroke.get(i-1).wrist;
       PVector pElbow = _s.stroke.get(i-1).elbow;
@@ -152,7 +154,7 @@ class People
       
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
       stroke(255);
-      fill(127);
+      fill(255);
       beginShape();
       vertex(wrist.x, wrist.y, wrist.z);
       vertex( elbow.x, elbow.y, elbow.z);
@@ -171,6 +173,8 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
+      float colour = _s.stroke.get(i).colour;
+
       // Previous
       PVector pWrist = _s.stroke.get(i-1).wrist;
       PVector pElbow = _s.stroke.get(i-1).elbow;
@@ -187,8 +191,8 @@ class People
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
       
       noStroke();
-      fill(127);
-        smooth();
+      fill(255);
+      smooth();
 
       beginShape();
       vertex(wrist.x, wrist.y, wrist.z);
@@ -204,8 +208,8 @@ class People
   
   void brush3(Stroke _s){
           stroke(255);
-
-    fill(127);
+//          float colour = _s.stroke.get(i).colour;
+    fill(255);
     beginShape();
     for (int i=1; i<_s.stroke.size(); i++)
     {
@@ -236,6 +240,7 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
+      float colour = _s.stroke.get(i).colour;
 
       
       PVector addPoint = PVector.sub(wrist, elbow);

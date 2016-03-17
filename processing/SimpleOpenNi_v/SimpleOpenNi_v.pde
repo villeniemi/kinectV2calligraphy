@@ -30,7 +30,7 @@ PVector      bodyCenter = new PVector();
 PVector      bodyDir = new PVector();
 PVector      com = new PVector();                                   
 PVector      com2d = new PVector();                                   
-color[]       userClr = new color[]{ color(255,0,0),
+color[]      userClr = new color[]{ color(255,0,0),
                                      color(0,255,0),
                                      color(0,0,255),
                                      color(255,255,0),
@@ -117,7 +117,7 @@ void draw()
   
   int[]   depthMap = context.depthMap();
   int[]   userMap = context.userMap();
-  int     steps   = 1;  // add steps to speed up the drawing
+  int     steps   = 2;  // add steps to speed up the drawing
   int     index;
   PVector realWorldPoint;
 
@@ -139,7 +139,6 @@ void draw()
         if(userMap[index] != 0) {
           stroke(rgbImg.pixels[index]);
         //  stroke(userClr[ (userMap[index] - 1) % userClr.length ]);        
-            
           point(realWorldPoint.x,realWorldPoint.y,realWorldPoint.z);
         } 
         else {
@@ -162,10 +161,9 @@ void draw()
     // draw the center of mass
     if(context.getCoM(userList[i],com))
     {
-      stroke(100,255,0);
+      stroke(130,130,130);
       strokeWeight(1);
       beginShape(LINES);
-        // 3D-space vertex line things
         vertex(com.x - 15,com.y,com.z);
         vertex(com.x + 15,com.y,com.z);
         
@@ -176,7 +174,7 @@ void draw()
         vertex(com.x,com.y,com.z + 15);
       endShape();
       
-      fill(0,255,100);
+      fill(255,255,255);
       text(Integer.toString(userList[i]),com.x,com.y,com.z);
     }      
   }    
@@ -199,8 +197,7 @@ void draw()
     
     if(context.isTrackingSkeleton(uId))
     {
-      
-      
+            
       Calligraphy myCal = myPeople.getById(uId);
       
       
@@ -211,28 +208,62 @@ void draw()
        
        float  confidence;
        
-       confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_HAND,wristPos);
+       confidence =  context .getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_HAND,wristPos);
        confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_RIGHT_ELBOW,elbowPos);
        confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HAND,leftWristPos);
        confidence =  context.getJointPositionSkeleton(userList[i],SimpleOpenNI.SKEL_LEFT_HIP,leftHipPos);
        
        //println(wristPos + "   " + elbowPos);
-       pushMatrix();
-         translate(wristPos.x, wristPos.y, wristPos.z);
-         sphere(28);
-       popMatrix();
-       
-       // myCal.startStroke(1);
-       if (leftWristPos.y > leftHipPos.y) 
-       {
-         myCal.startStroke(1);
-       }
-       else
-      {
-        myCal.finishStroke();
+
+      // Adjuster hand
+  
+         // If left wrist is higher than left hip, draw stroke. Otherwise don't and show red.       
+         // myCal.startStroke(1);
+         if (leftWristPos.y > leftHipPos.y) 
+         {
+           myCal.startStroke(1);
+           stroke(0,255,0);
+         }
+         else
+        {
+          myCal.finishStroke();
+          stroke(130,0,0);
+        }  
+        pushMatrix();
+          translate(leftWristPos.x, leftWristPos.y, leftWristPos.z);
+          sphere(30);
+        popMatrix();
+        // Draw the arm, elbow to wrist. Third variable is "strength"
+//        float str = (leftWristPos.y - leftHipPos.y)/8;
+        float strength = (leftWristPos.y - leftHipPos.y)/3;
+
+  //      float colour = userClr[ (userMap[i] - 1) % userClr.length ];
+    
+      myCal.addArm(elbowPos, wristPos, strength);
+/*
+        color colour;
+      if(userMap[uId+1] != 0) {
+        colour = userClr[ (userMap[uId]) % userClr.length ];
+      } else {
+        colour = 255;
       }
-      
-      myCal.addArm(elbowPos, wristPos, (leftWristPos.y - leftHipPos.y)/8);
+
+      println("user id: "+uId+", color = "+colour+", usermap: "+userClr[uId]);
+*/
+        stroke(userClr[uId-1]);
+
+      // Drawing hand
+       pushMatrix();
+         // Draw a "stick" to where the line will be drawn
+         PVector handPoint = PVector.sub(wristPos, elbowPos);
+         handPoint.setMag(strength);
+         PVector brushPoint = PVector.add(wristPos, handPoint);
+       //  translate(wristPos.x, wristPos.y, wristPos.z);
+         strokeWeight(30);
+         line(wristPos.x, wristPos.y, wristPos.z, brushPoint.x, brushPoint.y, brushPoint.z);
+         strokeWeight(1);
+//         box(str, str, str);
+       popMatrix();
      
     }
 
