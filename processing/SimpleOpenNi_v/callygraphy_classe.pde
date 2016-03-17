@@ -8,13 +8,14 @@ class Arm
   public PVector wrist; 
   public PVector elbow; 
   public float strength;
-  public float colour;
+  public color colour;
   
-  Arm(PVector _elbow, PVector _wrist, float _str )
+  Arm(PVector _elbow, PVector _wrist, float _str, color _clr)
   {
     wrist = new PVector(_wrist.x, _wrist.y,_wrist.z);
     elbow = new PVector(_elbow.x, _elbow.y,_elbow.z);
     strength = _str;
+    colour = _clr;
   }
 }
 
@@ -28,9 +29,9 @@ class Stroke
     brush = _b;
   }
   
-  void addArm(PVector _elbow, PVector _wrist, float _str )
+  void addArm(PVector _elbow, PVector _wrist, float _str, color _clr )
   {
-    stroke.add(new Arm(_elbow, _wrist, _str));
+    stroke.add(new Arm(_elbow, _wrist, _str, _clr));
   }
   
 }
@@ -47,10 +48,10 @@ class Calligraphy
     uId = _uId;
   }
   
-  void addArm(PVector _e, PVector _wrist, float _str)
+  void addArm(PVector _e, PVector _wrist, float _str, color _clr)
   {
     if (lastStrokeFinished == false){ 
-      strokes.get(strokes.size()-1).addArm(_e, _wrist, _str);
+      strokes.get(strokes.size()-1).addArm(_e, _wrist, _str, _clr);
     }   
   }
   
@@ -146,7 +147,6 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
-      float colour = _s.stroke.get(i).colour;
       
       PVector pWrist = _s.stroke.get(i-1).wrist;
       PVector pElbow = _s.stroke.get(i-1).elbow;
@@ -156,10 +156,10 @@ class People
       stroke(255);
       fill(255);
       beginShape();
-      vertex(wrist.x, wrist.y, wrist.z);
-      vertex( elbow.x, elbow.y, elbow.z);
-      vertex( pElbow.x, pElbow.y, pElbow.z);
-      vertex(pWrist.x, pWrist.y, pWrist.z);
+        vertex(wrist.x, wrist.y, wrist.z);
+        vertex( elbow.x, elbow.y, elbow.z);
+        vertex( pElbow.x, pElbow.y, pElbow.z);
+        vertex(pWrist.x, pWrist.y, pWrist.z);
       endShape(CLOSE);
       
       
@@ -173,13 +173,14 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
-      float colour = _s.stroke.get(i).colour;
+      color colour = _s.stroke.get(i).colour;
 
       // Previous
       PVector pWrist = _s.stroke.get(i-1).wrist;
       PVector pElbow = _s.stroke.get(i-1).elbow;
       float pStrength = _s.stroke.get(i-1).strength;
-      
+      float pColour = _s.stroke.get(i-1).colour;
+
       PVector addPoint = PVector.sub(wrist, elbow);
       addPoint.setMag(strength);
       PVector secondPoint = PVector.add(wrist, addPoint);
@@ -188,10 +189,10 @@ class People
       pAddPoint.setMag(pStrength);
       PVector pSecondPoint = PVector.add(pWrist, pAddPoint);      
       
-      //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
-      
+      //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2);     
+//      println(" colour is: "+colour);
       noStroke();
-      fill(255);
+      fill(colour);
       smooth();
 
       beginShape();
@@ -216,7 +217,6 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
-
       
       PVector addPoint = PVector.sub(wrist, elbow);
       addPoint.setMag(strength);
@@ -240,15 +240,12 @@ class People
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
       float strength = _s.stroke.get(i).strength;
-      float colour = _s.stroke.get(i).colour;
-
       
       PVector addPoint = PVector.sub(wrist, elbow);
       addPoint.setMag(strength);
       PVector secondPoint = PVector.add(wrist, addPoint);
       
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
-      
       
       curveVertex (secondPoint.x, secondPoint.y, secondPoint.z); 
     }

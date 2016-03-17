@@ -137,7 +137,9 @@ void draw()
         realWorldPoint = context.depthMapRealWorld()[index];
         // but only if the user is there
         if(userMap[index] != 0) {
+          // Get colour from the rgb pixel map
           stroke(rgbImg.pixels[index]);
+          // Or the userClr array-adjusted presets
         //  stroke(userClr[ (userMap[index] - 1) % userClr.length ]);        
           point(realWorldPoint.x,realWorldPoint.y,realWorldPoint.z);
         } 
@@ -231,7 +233,7 @@ void draw()
         }  
         pushMatrix();
           translate(leftWristPos.x, leftWristPos.y, leftWristPos.z);
-          sphere(30);
+          sphere(20);
         popMatrix();
         // Draw the arm, elbow to wrist. Third variable is "strength"
 //        float str = (leftWristPos.y - leftHipPos.y)/8;
@@ -239,7 +241,9 @@ void draw()
 
   //      float colour = userClr[ (userMap[i] - 1) % userClr.length ];
     
-      myCal.addArm(elbowPos, wristPos, strength);
+      color colour = userClr[uId-1];
+      myCal.addArm(elbowPos, wristPos, strength, colour);
+      
 /*
         color colour;
       if(userMap[uId+1] != 0) {
@@ -250,7 +254,7 @@ void draw()
 
       println("user id: "+uId+", color = "+colour+", usermap: "+userClr[uId]);
 */
-        stroke(userClr[uId-1]);
+      stroke(colour);
 
       // Drawing hand
        pushMatrix();
@@ -431,9 +435,18 @@ void keyPressed()
   logLocation();
   switch(key)
   {
-  case ' ':
+  case 'R':
     context.setMirror(!context.mirror());
     sceneRotation = !sceneRotation;
+    break;
+  case ' ':
+//    for (int i=myPeople.calligraphies.size(); i>=0; i++)
+//        myPeople.calligraphies.get(i).remove();
+//       myPeople.calligraphies.size drawAll();
+        for (int i = myPeople.calligraphies.size() - 1; i >= 0; i--) {
+          Calligraphy ret = myPeople.calligraphies.get(i);
+          myPeople.calligraphies.remove(i);
+        }
     break;
   }
     
