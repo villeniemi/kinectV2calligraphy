@@ -106,6 +106,8 @@ void draw()
   context.update();
   bcgr = context.rgbImage();
   background(bcgr);
+  spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+
   
   // set the scene pos
   translate(width/2, height/2, 0);

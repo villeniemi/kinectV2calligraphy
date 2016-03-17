@@ -177,21 +177,26 @@ void draw()
        
        //println(wristPos + "   " + elbowPos);
        pushMatrix();
-       translate(elbowPos.x, elbowPos.y, elbowPos.z);
+       translate(leftWristPos.x, leftWristPos.y, leftWristPos.z);
        sphere(28);
-        popMatrix();
+       popMatrix();
+        
+       pushMatrix();
+       translate(leftHipPos.x, leftHipPos.y, leftHipPos.z);
+       sphere(28);
+       popMatrix();
        
        
-        myCal.startStroke(1);
+        //myCal.startStroke(1);
        
-       /*if (leftWristPos.y > leftHipPos.y) 
+       if (leftWristPos.y > leftHipPos.y) 
        {
          myCal.startStroke(1);
        }
        else
       {
         myCal.finishStroke();
-      } */
+      }
       
       myCal.addArm(elbowPos, wristPos, 1);
     }
