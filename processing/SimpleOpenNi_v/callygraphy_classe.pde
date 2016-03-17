@@ -38,10 +38,12 @@ class Calligraphy
 {
   public ArrayList<Stroke> strokes;
   private boolean lastStrokeFinished;
+  public int uId;
   
-  Calligraphy(){
+  Calligraphy(int _uId){
     strokes = new ArrayList<Stroke>();
     lastStrokeFinished = true;
+    uId = _uId;
   }
   
   void addArm(PVector _e, PVector _wrist, float _str)
@@ -76,6 +78,58 @@ class Calligraphy
     
   }
 }
+
+// People 
+
+class People
+{
+  public ArrayList<Calligraphy> calligraphies;
+  
+  People(){   
+    calligraphies = new ArrayList<Calligraphy>();
+  }
+  
+  void addPeople(int[] _uIds)
+  {
+    for(int i=0;i<_uIds.length;i++) // For each user in the list
+    {
+      if (userExists(_uIds[i]) == false) 
+      {
+        calligraphies.add(new Calligraphy(_uIds[i]));
+        //println("new person " + _uIds[i] );
+      }
+    }
+  }
+  
+  boolean userExists(int _uId)
+  {
+    boolean ret = false; 
+    for(int i = 0; i < calligraphies.size(); i++)
+    {
+      int testId = calligraphies.get(i).uId;
+      //println (ret + "  testId: " + testId + "   uid: " + _uId);
+      if (testId == _uId) ret = true;
+    }
+    println (ret);
+    
+    return ret;  
+  }
+  
+  Calligraphy getById(int _uId)
+  {
+    Calligraphy ret = new Calligraphy(-1);
+    int testId = -1;
+    for(int i = 0; i < calligraphies.size(); i++)
+    {
+      testId = calligraphies.get(i).uId;
+      if (testId == _uId) ret = calligraphies.get(i);
+    }
+    
+    return ret;
+  }
+  
+}
+
 
 // Drawing brushes
 
@@ -134,6 +188,8 @@ class Calligraphy
       
       noStroke();
       fill(127);
+        smooth();
+
       beginShape();
       vertex(wrist.x, wrist.y, wrist.z);
       vertex( secondPoint.x, secondPoint.y, secondPoint.z);
@@ -145,6 +201,60 @@ class Calligraphy
     }
   
   }
+  
+  void brush3(Stroke _s){
+          stroke(255);
+
+    fill(127);
+    beginShape();
+    for (int i=1; i<_s.stroke.size(); i++)
+    {
+      PVector wrist = _s.stroke.get(i).wrist;
+      PVector elbow = _s.stroke.get(i).elbow;
+      float strength = _s.stroke.get(i).strength;
+
+      
+      PVector addPoint = PVector.sub(wrist, elbow);
+      addPoint.setMag(strength);
+      PVector secondPoint = PVector.add(wrist, addPoint);
+      
+      //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
+      
+      
+      curveVertex (wrist.x, wrist.y, wrist.z);
+      if (i == _s.stroke.size() - 1)
+      {
+        vertex (secondPoint.x, secondPoint.y, secondPoint.z);
+      }
+      
+      
+    }
+     
+    
+    for (int i=_s.stroke.size()-1; i >= 0; i--)
+    {
+      PVector wrist = _s.stroke.get(i).wrist;
+      PVector elbow = _s.stroke.get(i).elbow;
+      float strength = _s.stroke.get(i).strength;
+
+      
+      PVector addPoint = PVector.sub(wrist, elbow);
+      addPoint.setMag(strength);
+      PVector secondPoint = PVector.add(wrist, addPoint);
+      
+      //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
+      
+      
+      curveVertex (secondPoint.x, secondPoint.y, secondPoint.z); 
+    }
+    
+    endShape(CLOSE);
+    
+      
+  
+  }
+  
+  
     
   void drawMe(Stroke _s)
   {

@@ -39,7 +39,9 @@ color[]       userClr = new color[]{ color(255,0,0),
                                    };
 
 PImage rgbImg;
-Calligraphy myCal;
+// Calligraphy myCal;
+
+People myPeople;
 
 
 // -----------------------------------------------------------------
@@ -82,7 +84,8 @@ void setup()
               float(width)/float(height),
               10,50000);
   // Setting up calligraphy class
-  myCal = new Calligraphy();  
+  //myCal = new Calligraphy();
+  myPeople = new People();  
 
 }
  
@@ -181,13 +184,26 @@ void draw()
   // draw the kinect cam
 //  context.drawCamFrustum();
 
+  // adding new users to the list
+  
+  myPeople.addPeople(userList);
+  
+  println (myPeople.calligraphies.size());
   
   // draw calligraphy 
-  for(int i=0;i<userList.length;i++)
+ 
+  
+  for(int i=0;i<userList.length;i++) // For each user in the list
   {
+    int uId = userList[i]; 
     
-    if(context.isTrackingSkeleton(userList[i]))
+    if(context.isTrackingSkeleton(uId))
     {
+      
+      
+      Calligraphy myCal = myPeople.getById(uId);
+      
+      
        PVector wristPos = new PVector();
        PVector elbowPos = new PVector();
        PVector leftWristPos = new PVector();
@@ -217,10 +233,17 @@ void draw()
       }
       
       myCal.addArm(elbowPos, wristPos, (leftWristPos.y - leftHipPos.y)/8);
+     
     }
+
   }
   
-  myCal.drawAll();
+  for (int i=0; i < myPeople.calligraphies.size(); i++)
+  {
+    myPeople.calligraphies.get(i).drawAll();
+  }
+  
+  
 }
 
 
