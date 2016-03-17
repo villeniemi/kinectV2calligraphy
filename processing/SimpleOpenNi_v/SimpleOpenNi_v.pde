@@ -24,7 +24,7 @@ float traZ = -1500;
 
 boolean      autoCalib=true;
 
-boolean      sceneRotation = false; // toggle with spacebar
+boolean      sceneRotation = true; // toggle with spacebar
 
 PVector      bodyCenter = new PVector();
 PVector      bodyDir = new PVector();
@@ -118,7 +118,7 @@ void draw()
   int     index;
   PVector realWorldPoint;
 
-  translate(traX,traY,traZ);  // set the rotation center of the scene 1000 infront of the camera
+  translate(traX,traY,traZ);  // default 0, 0, -1000
 
   // draw the pointcloud
   
