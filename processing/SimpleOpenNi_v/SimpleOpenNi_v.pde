@@ -105,10 +105,17 @@ void draw()
 {
   // update the cam
   context.update();
+<<<<<<< HEAD
   rgbImg = context.rgbImage();
   //rgbImg.resize(1280,960); 
   background(0);
   spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+=======
+  bcgr = context.rgbImage();
+  bcgr.resize(width, height);
+  background(0);
+  spotLight(255, 255, 255, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+>>>>>>> fcf0a4a0358f89a74be1764ac16459efff362aaf
 
   
   // set the scene pos
@@ -135,7 +142,10 @@ void draw()
 
   // draw the pointcloud
   
+<<<<<<< HEAD
 
+=======
+>>>>>>> fcf0a4a0358f89a74be1764ac16459efff362aaf
   beginShape(POINTS);
   for(int y=0;y < context.depthHeight();y+=steps)
   {
@@ -230,7 +240,7 @@ void draw()
         myCal.finishStroke();
       }
       
-      myCal.addArm(elbowPos, wristPos, 10);
+      myCal.addArm(elbowPos, wristPos, (leftWristPos.y - leftHipPos.y)/8);
     }
   }
   
