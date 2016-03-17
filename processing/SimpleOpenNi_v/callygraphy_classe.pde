@@ -112,7 +112,7 @@ class Calligraphy
   }
   
    void brush2(Stroke _s){
-    for (int i=0; i<_s.stroke.size(); i++)
+    for (int i=1; i<_s.stroke.size(); i++)
     {
       PVector wrist = _s.stroke.get(i).wrist;
       PVector elbow = _s.stroke.get(i).elbow;
@@ -122,15 +122,22 @@ class Calligraphy
       PVector pElbow = _s.stroke.get(i-1).elbow;
       float pStrength = _s.stroke.get(i-1).strength;
       
+      PVector addPoint = PVector.sub(wrist, elbow);
+      addPoint.setMag(strength);
+      PVector secondPoint = PVector.add(wrist, addPoint);
+      
+      PVector pAddPoint = PVector.sub(pWrist, pElbow);
+      pAddPoint.setMag(pStrength);
+      PVector pSecondPoint = PVector.add(pWrist, pAddPoint);      
+      
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
       
-      translate(width/2, height/2);
       stroke(255);
       fill(127);
       beginShape();
       vertex(wrist.x, wrist.y, wrist.z);
-      vertex( elbow.x, elbow.y, elbow.z);
-      vertex( pElbow.x, pElbow.y, pElbow.z);
+      vertex( secondPoint.x, secondPoint.y, secondPoint.z);
+      vertex( pSecondPoint.x, pSecondPoint.y, pSecondPoint.z);
       vertex(pWrist.x, pWrist.y, pWrist.z);
       endShape(CLOSE);
       
@@ -141,7 +148,7 @@ class Calligraphy
     
   void drawMe(Stroke _s)
   {
-    if (_s.brush == 1) brush1(_s);
+    if (_s.brush == 1) brush2(_s);
     else 
     println ("no such a brush");
   }

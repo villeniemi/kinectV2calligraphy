@@ -105,6 +105,7 @@ void draw()
   // update the cam
   context.update();
   bcgr = context.rgbImage();
+  //bcgr.resize(1280,960); 
   background(bcgr);
   spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
 
@@ -222,7 +223,7 @@ void draw()
         myCal.finishStroke();
       }
       
-      myCal.addArm(elbowPos, wristPos, 1);
+      myCal.addArm(elbowPos, wristPos, 10);
     }
   }
   
