@@ -105,9 +105,9 @@ void draw()
   // update the cam
   context.update();
   bcgr = context.rgbImage();
-  //bcgr.resize(1280,960); 
-  background(bcgr);
-  spotLight(255, 0, 0, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
+  bcgr.resize(width, height);
+  background(0);
+  spotLight(255, 255, 255, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
 
   
   // set the scene pos
@@ -133,7 +133,7 @@ void draw()
   translate(0,0,-1000);  // set the rotation center of the scene 1000 infront of the camera
 
   // draw the pointcloud
-  /*
+  
   beginShape(POINTS);
   for(int y=0;y < context.depthHeight();y+=steps)
   {
@@ -154,7 +154,7 @@ void draw()
     } 
   } 
   endShape();
-  */
+  
   // draw the skeleton if it's available
   
   int[] userList = context.getUsers();
@@ -223,7 +223,7 @@ void draw()
         myCal.finishStroke();
       }
       
-      myCal.addArm(elbowPos, wristPos, 10);
+      myCal.addArm(elbowPos, wristPos, (leftWristPos.y - leftHipPos.y)/8);
     }
   }
   

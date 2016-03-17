@@ -132,7 +132,7 @@ class Calligraphy
       
       //translate ((wrist.x + elbow.x)/2, (wrist.y + elbow.y)/2, (wrist.z + elbow.z)/2); 
       
-      stroke(255);
+      noStroke();
       fill(127);
       beginShape();
       vertex(wrist.x, wrist.y, wrist.z);
