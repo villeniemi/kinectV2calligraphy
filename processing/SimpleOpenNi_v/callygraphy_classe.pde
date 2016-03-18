@@ -391,7 +391,8 @@ class People
     
   void drawMe(Stroke _s, color _c)
   {
-    if (_s.brush == 1) brush4(_s, _c);
+//    if (_s.brush == 1) brush2(_s);
+if (_s.brush == 1) brush4(_s, _c);
     else 
     println ("no such a brush");
   }

@@ -55,7 +55,8 @@ People myPeople;
 void setup()
 {
 //  size(640,480,P3D); 
-  size(1440,960,P3D);
+  size(1920,1080,P3D);
+//  fullScreen(P3D);
   
   //Setting up kinect context
   context = new SimpleOpenNI(this);
@@ -248,16 +249,6 @@ void draw()
       color colour = userClr[uId-1];
       myCal.addArm(elbowPos, wristPos, strength, colour);
       
-/*
-        color colour;
-      if(userMap[uId+1] != 0) {
-        colour = userClr[ (userMap[uId]) % userClr.length ];
-      } else {
-        colour = 255;
-      }
-
-      println("user id: "+uId+", color = "+colour+", usermap: "+userClr[uId]);
-*/
       stroke(colour);
 
       // Drawing hand
@@ -279,8 +270,9 @@ void draw()
   
   for (int i=0; i < myPeople.calligraphies.size(); i++)
   {
-    color c = color(255, 255, 255);
-    myPeople.calligraphies.get(i).drawAll(c);
+    color colour = userClr[i];
+//    color c = color(255, 255, 255);
+    myPeople.calligraphies.get(i).drawAll(colour);
   }
   
   
