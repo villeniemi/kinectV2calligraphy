@@ -30,12 +30,12 @@ PVector      bodyCenter = new PVector();
 PVector      bodyDir = new PVector();
 PVector      com = new PVector();                                   
 PVector      com2d = new PVector();                                   
-color[]      userClr = new color[]{ color(255,0,0),
-                                     color(0,255,0),
-                                     color(0,0,255),
+color[]      userClr = new color[]{ color(102,255,255),
+                                     color(255,188,188),
+                                     color(255,204,255),
                                      color(255,255,0),
-                                     color(255,0,255),
-                                     color(0,255,255)
+                                     color(166,255,107),
+                                     color(255,217,133)
                                    };
 
 PImage rgbImg;
@@ -55,7 +55,7 @@ People myPeople;
 void setup()
 {
 //  size(640,480,P3D); 
-  size(1920,1080,P3D);
+  size(1920,1200,P3D);
 //  fullScreen(P3D);
   
   //Setting up kinect context
@@ -107,10 +107,11 @@ void draw()
   rgbImg = context.rgbImage();
   rgbImg.resize(width, height);
   background(0);
-  ambientLight(200, 200, 200);
-  spotLight(255, 255, 255, width/2, height/2, 0, width/2, height/2, 3000, PI/2, 2);
-  spotLight(255, 255, 255, width/2, height/2, 400, 0, 0, -1, PI/4, 2);
-   spotLight(255, 255, 255, 50, 50, 400, 0, 0, -1, PI/16, 2); 
+  ambientLight(110, 110, 110);
+  spotLight(255, 255, 255, width/2, height/2, 0, 0, 0, -1, PI/2, 2);
+  spotLight(255, 255, 255, width/2, height/2, 1000, 0, 0, -1, PI/4, 2);
+  spotLight(255, 255, 255, 0, height, 2000, 1, -1, -1, PI/4, 2);
+   spotLight(255, 255, 255, 50, 50, 400, 0, 0, -1, PI/16, 2);
   // set the scene pos
   translate(width/2, height/2, 0);
   if(sceneRotation){
@@ -242,7 +243,7 @@ void draw()
         popMatrix();
         // Draw the arm, elbow to wrist. Third variable is "strength"
 //        float str = (leftWristPos.y - leftHipPos.y)/8;
-        float strength = (leftWristPos.y - leftHipPos.y)/8;
+        float strength = (leftWristPos.y - leftHipPos.y)/5;
 
   //      float colour = userClr[ (userMap[i] - 1) % userClr.length ];
     
@@ -260,7 +261,7 @@ void draw()
        //  translate(wristPos.x, wristPos.y, wristPos.z);
          strokeWeight(30);
          line(wristPos.x, wristPos.y, wristPos.z, brushPoint.x, brushPoint.y, brushPoint.z);
-         strokeWeight(1);
+         strokeWeight(3);
 //         box(str, str, str);
        popMatrix();
      

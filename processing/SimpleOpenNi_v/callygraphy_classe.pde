@@ -365,8 +365,8 @@ class People
         float y4 = curvePoint(secondPoint1.y, secondPoint2.y, secondPoint3.y, secondPoint4.y, t);
         float z4 = curvePoint(secondPoint1.z, secondPoint2.z, secondPoint3.z, secondPoint4.z, t);
         
-        fill(red(_c),green(_c), blue(_c), 96);
-        blendMode(BLEND);
+        fill(red(_c),green(_c), blue(_c), 160);
+        blendMode(ADD);
 
         noStroke();
         beginShape();
@@ -382,7 +382,7 @@ class People
       
       
     }
-  blendMode(ADD);
+  blendMode(BLEND);
       
   
   }
